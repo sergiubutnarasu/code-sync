@@ -1,0 +1,30 @@
+{
+  "name": "code-sync-client",
+  "version": "1.0.0",
+  "description": "Hello World",
+  "private": true,
+  "main": "./dist/index.js",
+  "bin": {
+    "code-sync": "./dist/index.js"
+  },
+  "preferGlobal": true,
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "inspect": "node --inspect dist/",
+    "start": "node dist/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^8.0.6",
+    "typescript": "^2.4.1",
+    "typings": "^2.1.1"
+  },
+  "dependencies": {
+    "chokidar": "^1.7.0",
+    "commander": "^2.10.0",
+    "fs-extra": "^3.0.1"
+  }
+}
