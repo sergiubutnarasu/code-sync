@@ -3,7 +3,7 @@ import { AppSettings } from "./models/app.settings";
 import * as fs from "fs";
 
 export class App {
-    private _configFileName: string = "code-sync.json";
+    private _configFileName: string = process.cwd() + "/code-sync.json";
     private _settings: AppSettings;
     private _sync: Sync;
 

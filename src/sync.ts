@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import * as chokidar from "chokidar";
 import * as fsExtra from "fs-extra";
 
@@ -17,28 +18,37 @@ export class Sync {
     }
 
     private WatchDirectory(path: string) {
-        chokidar.watch(path, { ignored: /(^|[\/\\])\../ })
+        let options = {
+            ignoreInitial: false,
+            ignorePermissionErrors: true,
+            ignored: this.GetIgnoredList()
+        }
+
+        chokidar.watch(path, options)
             .on('all', (event, path) => {
                 this.Process(event, path);
             });
     }
 
     private Copy(sourcePath: string, destinationPath: string, cb: any = null) {
-        fsExtra.copy(sourcePath, destinationPath).then(() => {
-            if (cb != null) {
-                cb();
-            }
-        });
+        if (sourcePath !== this._settings.mountPath) {
+            fsExtra.copy(sourcePath, destinationPath).then(() => {
+                if (cb != null) {
+                    cb();
+                }
+            });
+        }
     }
 
     private Delete(path: string) {
-        fsExtra.remove(path);
+        if (fs.existsSync(path)) {
+            fsExtra.remove(path);
+        }
     }
 
     private Process(event, path) {
         console.log(event, path);
         let destinationPath = this.GetSourcePath(path);
-        console.log(destinationPath);
 
         switch (event) {
             case "unlinkDir":
@@ -58,5 +68,19 @@ export class Sync {
     private GetSourcePath(path: string) {
         path = this.ExtractMountPath(path);
         return `${this._settings.sourcePath}\\${path}`;
+    }
+
+    private GetIgnoredList(): Array<any> {
+        let result = [/code-sync\.json$/];
+        if (this._settings.ignored != null) {
+            this._settings.ignored.forEach((part, index, array) => {
+                array[index] = new RegExp(array[index]);
+            });
+
+            result = result.concat(this._settings.ignored);
+            console.log(result);
+        }
+
+        return result;
     }
 }
